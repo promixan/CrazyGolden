@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverScreen;
     public GameObject pauseScreen;
     private SpawnManager spawnManager;
+    public bool IsShuttingDown { get; private set; }
 
     private bool gameActive = false;
     private bool gamePaused = false;
@@ -17,6 +18,7 @@ public class GameManager : MonoBehaviour
     {
         pauseAction = InputSystem.actions.FindAction("Pause");
         spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
+        IsShuttingDown = false;
         mainScreen.SetActive(true);
     }
 
@@ -37,6 +39,8 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        if (IsShuttingDown) return;
+        
         gameOverScreen.SetActive(true);
         gameActive = false;
     }
@@ -77,11 +81,17 @@ public class GameManager : MonoBehaviour
             Time.timeScale = 0;
             gamePaused = true;
             pauseScreen.SetActive(true);
-        } else if (Time.timeScale == 0)
+        }
+        else if (Time.timeScale == 0)
         {
             Time.timeScale = 1;
             gamePaused = false;
             pauseScreen.SetActive(false);
         }
+    }
+
+    void OnDestroy()
+    {
+        IsShuttingDown = true;
     }
 }

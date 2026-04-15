@@ -123,6 +123,8 @@ public class PlayerController : MonoBehaviour
     
     private void OnDestroy()
     {
+        if (gameManager.IsShuttingDown) return;
+        
         if (gameManager.IsGameActive()) {
             gameManager.GameOver();
         }
