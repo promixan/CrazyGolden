@@ -74,6 +74,9 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Lifes are ended.");
             Destroy(gameObject);
+            if (gameManager.IsGameActive()) {
+                gameManager.GameOver();
+            }
         } else
         {
             Debug.Log("You loose a life. Rest is: " + lifeCounter);
@@ -120,13 +123,9 @@ public class PlayerController : MonoBehaviour
             transform.position = new(transform.position.x, transform.position.y, -zBorder);
         }
     }
-    
-    private void OnDestroy()
+
+    void OnDestroy()
     {
-        if (gameManager.IsShuttingDown) return;
-        
-        if (gameManager.IsGameActive()) {
-            gameManager.GameOver();
-        }
+        InputSystem.actions.FindAction("Attack").performed -= OnAttack;
     }
 }

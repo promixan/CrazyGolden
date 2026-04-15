@@ -1,13 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject mainScreen;
     public GameObject gameOverScreen;
     public GameObject pauseScreen;
     private SpawnManager spawnManager;
-    public bool IsShuttingDown { get; private set; }
 
     private bool gameActive = false;
     private bool gamePaused = false;
@@ -18,8 +17,11 @@ public class GameManager : MonoBehaviour
     {
         pauseAction = InputSystem.actions.FindAction("Pause");
         spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
-        IsShuttingDown = false;
-        mainScreen.SetActive(true);
+    }
+
+    void Start()
+    {
+        StartGame();
     }
 
     void Update()
@@ -32,31 +34,38 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        mainScreen.SetActive(false);
         gameActive = true;
         spawnManager.StartNewGame();
     }
 
     public void GameOver()
     {
-        if (IsShuttingDown) return;
-        
         gameOverScreen.SetActive(true);
         gameActive = false;
     }
 
-    public void BackToMainScreen()
+    public void ReturnToMenu()
     {
         if (Time.timeScale == 0)
         {
             Time.timeScale = 1;
         }
         gamePaused = false;
+        SceneManager.LoadScene(0);
+    }
+
+    public void RestartGame()
+    {
+        if (Time.timeScale == 0)
+        {
+            Time.timeScale = 1;
+        }
+        gamePaused = false;
+        gameActive = false;
         spawnManager.ResetGame();
         pauseScreen.SetActive(false);
         gameOverScreen.SetActive(false);
-        gameActive = false;
-        mainScreen.SetActive(true);
+        StartGame();
     }
 
     public bool IsGameOver()
@@ -88,10 +97,5 @@ public class GameManager : MonoBehaviour
             gamePaused = false;
             pauseScreen.SetActive(false);
         }
-    }
-
-    void OnDestroy()
-    {
-        IsShuttingDown = true;
     }
 }

@@ -14,13 +14,7 @@ public class SpawnManager : MonoBehaviour
     private readonly float minTargetSpawnTimeOutRange = 2.0f;
     private readonly float maxTargetSpawnTimeOutRange = 3.0f;
 
-    private IEnumerator spawnCoroutine;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
+    private Coroutine spawnCoroutine;
 
     void Awake()
     {
@@ -28,20 +22,19 @@ public class SpawnManager : MonoBehaviour
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
     public void StartNewGame()
     {
         ResetGame();
         SpawnPlayer();
-        StartCoroutine(SpawnTargetRoutine());
+        spawnCoroutine = StartCoroutine(SpawnTargetRoutine());
     }
 
     public void ResetGame()
     {
+        if (spawnCoroutine != null)
+        {
+            StopCoroutine(spawnCoroutine);
+        }
         DestroyAllObjects(GameObject.FindGameObjectsWithTag("Player"));
         DestroyAllObjects(GameObject.FindGameObjectsWithTag("Target"));
     }
