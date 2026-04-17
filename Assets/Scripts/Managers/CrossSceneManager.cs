@@ -7,27 +7,38 @@ public class CrossSceneManager : MonoBehaviour
 {
     public static CrossSceneManager Instance;
 
-    public const int MaxPlayerNameLenght = 10;
+    public const int MaxPlayerNameLength = 10;
 
     protected string PlayerDataPath;
     protected string BestScoresDataPath;
 
+    public string DefaultPlayerName {get; private set;} = "Unnamed";
+
+    private string m_playerName;
     public string PlayerName
     {
-        get => PlayerName;
+        get
+        {
+            if (string.IsNullOrEmpty(m_playerName))
+            {
+                return DefaultPlayerName;
+            }
+            return m_playerName;
+        }
         set
         {
             if (string.IsNullOrEmpty(value))
             {
-                PlayerName = "Unnamed";
+                m_playerName = DefaultPlayerName;
+                return;
             }
 
-            if (value.Length > MaxPlayerNameLenght)
+            if (value.Length > MaxPlayerNameLength)
             {
-                throw new ArgumentException("Maximum characters allowed: " + MaxPlayerNameLenght);
+                throw new ArgumentException("Maximum characters allowed: " + MaxPlayerNameLength);
             }
 
-            PlayerName = value;
+            m_playerName = value;
         }
     }
     public int Difficulty { get; private set; }
@@ -44,8 +55,8 @@ public class CrossSceneManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         BestScores = new();
-        PlayerDataPath = Application.persistentDataPath + "playedData.json";
-        BestScoresDataPath = Application.persistentDataPath + "bestScores.json";
+        PlayerDataPath = Application.persistentDataPath + "/PlayerData.json";
+        BestScoresDataPath = Application.persistentDataPath + "/BestScores.json";
         LoadAllData();
     }
 
@@ -89,7 +100,7 @@ public class CrossSceneManager : MonoBehaviour
             {
                 if (!string.IsNullOrEmpty(data.Name))
                 {
-                    PlayerName = name;
+                    PlayerName = data.Name;
                 }
                 Difficulty = data.LastChoosenDifficulty;
             }

@@ -23,6 +23,7 @@ public class MenuManager : MonoBehaviour
 
     public void ExitGame()
     {
+        CrossSceneManager.Instance.SaveAllData();
         #if UNITY_EDITOR
             EditorApplication.ExitPlaymode();
         #else
