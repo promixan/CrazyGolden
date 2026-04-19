@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50468dafa843051468c77ad4b66a32be, type: 3}
+  m_Name: DifficultiesDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::DifficultiesDatabase
+  Difficulties:
+  - {fileID: 11400000, guid: b0e80c0098c38c54ca44e990941913c8, type: 2}
+  - {fileID: 11400000, guid: 7efa61835fb43b8458f60a8c991a058d, type: 2}
+  - {fileID: 11400000, guid: 1a2faffaba29e43488d90dcb3e4e74d5, type: 2}

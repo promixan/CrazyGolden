@@ -6,6 +6,7 @@ using UnityEngine;
 public class CrossSceneManager : MonoBehaviour
 {
     public static CrossSceneManager Instance;
+    public DifficultiesDatabase DifficultiesDatabase;
 
     public const int MaxPlayerNameLength = 10;
 
@@ -41,7 +42,7 @@ public class CrossSceneManager : MonoBehaviour
             m_playerName = value;
         }
     }
-    public int Difficulty { get; private set; }
+    public DifficultyData Difficulty { get; private set; }
     public List<ScoreData> BestScores { get; private set; }
 
     void Awake()
@@ -77,7 +78,7 @@ public class CrossSceneManager : MonoBehaviour
         PlayerData data = new()
         {
             Name = PlayerName,
-            LastChoosenDifficulty = Difficulty
+            LastChoosenDifficulty = Difficulty.Id
         };
 
         string json = JsonUtility.ToJson(data);
@@ -102,7 +103,8 @@ public class CrossSceneManager : MonoBehaviour
                 {
                     PlayerName = data.Name;
                 }
-                Difficulty = data.LastChoosenDifficulty;
+
+                Difficulty = DifficultiesDatabase.GetById(data.LastChoosenDifficulty);
             }
         }
     }
