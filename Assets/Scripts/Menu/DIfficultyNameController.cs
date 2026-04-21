@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(TMP_Text))]
-public class DIfficultyNameController : MonoBehaviour
+public class DifficultyNameController : MonoBehaviour
 {
     private TMP_Text _text;
 
@@ -13,6 +13,11 @@ public class DIfficultyNameController : MonoBehaviour
     }
 
     void Start()
+    {
+        UpdateName();
+    }
+
+    public void UpdateName()
     {
         _text.text = CrossSceneManager.Instance.Difficulty.Name;
         _text.color = CrossSceneManager.Instance.Difficulty.NameColor;

@@ -61,6 +61,15 @@ public class CrossSceneManager : MonoBehaviour
         LoadAllData();
     }
 
+    public void SelectDifficulty(int difficultyIndex)
+    {
+        var difficulty = DifficultiesDatabase.GetById(difficultyIndex);
+        if (difficulty != null)
+        {
+            Difficulty = difficulty;
+        }
+    }
+
     public void SaveAllData()
     {
         SavePlayerData();
@@ -104,7 +113,7 @@ public class CrossSceneManager : MonoBehaviour
                     PlayerName = data.Name;
                 }
 
-                Difficulty = DifficultiesDatabase.GetById(data.LastChoosenDifficulty);
+                SelectDifficulty(data.LastChoosenDifficulty);
             }
         }
     }

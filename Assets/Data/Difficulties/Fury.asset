@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 309d1f95c3ba706409b7fe67b92e1ea4, type: 3}
   m_Name: Fury
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyData
-  Id: 3
-  Name: Furi
-  NameColor: {r: 1, g: 0, b: 0, a: 0}
+  Id: 2
+  Name: Fury
+  NameColor: {r: 1, g: 0, b: 0, a: 1}
