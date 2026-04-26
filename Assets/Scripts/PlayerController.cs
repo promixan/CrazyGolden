@@ -74,10 +74,12 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Lifes are ended.");
             Destroy(gameObject);
-            if (gameManager.IsGameActive()) {
+            if (gameManager.IsGameActive())
+            {
                 gameManager.GameOver();
             }
-        } else
+        }
+        else
         {
             Debug.Log("You loose a life. Rest is: " + lifeCounter);
         }
