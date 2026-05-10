@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Data;
 using UnityEngine;
 
 public class CrossSceneManager : MonoBehaviour
@@ -18,14 +19,7 @@ public class CrossSceneManager : MonoBehaviour
     private string m_playerName;
     public string PlayerName
     {
-        get
-        {
-            if (string.IsNullOrEmpty(m_playerName))
-            {
-                return DefaultPlayerName;
-            }
-            return m_playerName;
-        }
+        get => string.IsNullOrEmpty(m_playerName) ? DefaultPlayerName : m_playerName;
         set
         {
             if (string.IsNullOrEmpty(value))
@@ -94,9 +88,13 @@ public class CrossSceneManager : MonoBehaviour
         File.WriteAllText(PlayerDataPath, json);
     }
 
-    public void SaveBestScoresData()
+    private void SaveBestScoresData()
     {
-        string json = JsonUtility.ToJson(BestScores);
+        var bestScores = new BestScores
+        {
+            scores = BestScores
+        };
+        var json = JsonUtility.ToJson(bestScores);
         File.WriteAllText(BestScoresDataPath, json);
     }
 
@@ -131,4 +129,11 @@ public class CrossSceneManager : MonoBehaviour
         }
     }
 
+    public void UpdateBestScores(List<ScoreData> scores)
+    {
+        if (scores is { Count: > 0 })
+        {
+            BestScores = scores;
+        }
+    }
 }

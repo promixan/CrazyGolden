@@ -1,51 +1,82 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class ResultsHandler : MonoBehaviour
 {
-    public static ResultsHandler Instance;
-
+    private const int MaxBestScoresNumber = 10;
+    
+    private CrossSceneManager _crossSceneManager;
+    private int CurrentScore { get; set; }
+    
     public TMP_Text score;
 
-    public int CurrentScore { get; private set; }
-
-    void Awake()
+    private void Start()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        RefreshDisplaedScore();
+        _crossSceneManager = CrossSceneManager.Instance;
+        ServiceLocator.Register(this);
+        ResetScore();
     }
 
-    void Start()
+    private void OnDestroy()
     {
-        ResetScore();
+        ServiceLocator.Unregister<ResultsHandler>();
     }
 
     public void UpdateScore(int value)
     {
         CurrentScore += value;
-        RefreshDisplaedScore();
+        RefreshDisplayedScore();
+    }
+
+    public void ApplyScore()
+    {
+        var bestScores = CrossSceneManager.Instance.BestScores;
+        var currentScore = new ScoreData
+        {
+            Score = CurrentScore,
+            PlayerName = _crossSceneManager.PlayerName,
+            Difficulty = _crossSceneManager.Difficulty.Id
+        };
+        bestScores.Add(currentScore);
+        var sortedList = bestScores.OrderBy(s => s.Score)
+            .Reverse()
+            .ToList();
+        RemoveIfExceeds(sortedList);
+        _crossSceneManager.UpdateBestScores(sortedList);
     }
 
     public void SetScore(int value)
     {
         CurrentScore = value;
-        RefreshDisplaedScore();
+        RefreshDisplayedScore();
     }
 
     public void ResetScore()
     {
         CurrentScore = 0;
-        RefreshDisplaedScore();
+        RefreshDisplayedScore();
     }
 
-    private void RefreshDisplaedScore()
+    private void RefreshDisplayedScore()
     {
         score.text = CurrentScore.ToString();
+    }
+
+    public void RemoveIfExceeds(List<ScoreData> list)
+    {
+        while (true)
+        {
+            if (list.Count() > MaxBestScoresNumber)
+            {
+                list.RemoveAt(list.Count() - 1);
+                continue;
+            }
+            break;
+        }
     }
 }

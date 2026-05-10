@@ -19,6 +19,7 @@ public class ProjectileController : MonoBehaviour
             Debug.Log("Target is heated by projectile");
             Destroy(otgObject);
             this.gameObject.SetActive(false);
+            ServiceLocator.Get<ResultsHandler>().UpdateScore(1);
         }
     }
 

@@ -4,39 +4,33 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float livesByDefault = 5;
     [SerializeField] private float playerSpeed = 10f;
-    private float lifeCounter;
-    [SerializeField] private readonly float playerRotationSpeed = 150f;
-    private const float upXBorder = 13.0f;
-    private const float downXBorder = -5.0f;
-    private const float zBorder = 16.2f;
+    [SerializeField] private readonly float _playerRotationSpeed = 150f;
+    private const float UpXBorder = 13.0f;
+    private const float DownXBorder = -5.0f;
+    private const float ZBorder = 16.2f;
 
-    private GameManager gameManager;
-    private ItemsPooler projectilesPoller;
+    private GameManager _gameManager;
+    private ItemsPooler _projectilesPoller;
 
-    private InputAction moveAction;
+    private InputAction _moveAction;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-        moveAction = InputSystem.actions.FindAction("Move");
+        _moveAction = InputSystem.actions.FindAction("Move");
         InputSystem.actions.FindAction("Attack").performed += OnAttack;
-
-        if (lifeCounter == 0)
-        {
-            lifeCounter = livesByDefault;
-        }
-        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-        projectilesPoller = GameObject.Find("Hearts Pooler").GetComponent<ItemsPooler>();
+        _gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        _projectilesPoller = GameObject.Find("Hearts Pooler").GetComponent<ItemsPooler>();
+        ServiceLocator.Get<EnergyHandler>().ResetEnergy();
+        ServiceLocator.Get<ResultsHandler>().ResetScore();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!gameManager.IsGamePaused())
+        if (!_gameManager.IsGamePaused())
         {
-            Vector2 move = moveAction.ReadValue<Vector2>();
+            Vector2 move = _moveAction.ReadValue<Vector2>();
             float verticalInput = move.y;
             float horizontalInput = move.x;
 
@@ -48,9 +42,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnAttack(InputAction.CallbackContext context)
     {
-        if (!gameManager.IsGamePaused())
+        if (!_gameManager.IsGamePaused())
         {
-            GameObject projectile = projectilesPoller.GetAvailableItemFromPool();
+            GameObject projectile = _projectilesPoller.GetAvailableItemFromPool();
             projectile.SetActive(true);
             projectile.transform.position = transform.position;
         }
@@ -63,26 +57,20 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Player is heated by Target.");
             Destroy(otgObject);
-            DecreaseLifes();
+            DecreaseLives();
         }
     }
 
-    private void DecreaseLifes()
+    private void DecreaseLives()
     {
-        lifeCounter--;
-        if (lifeCounter <= 0)
+        var energyLeft = ServiceLocator.Get<EnergyHandler>().DecreaseEnergy();
+        if (energyLeft > 0) return;
+        if (_gameManager.IsGameActive())
         {
-            Debug.Log("Lifes are ended.");
-            Destroy(gameObject);
-            if (gameManager.IsGameActive())
-            {
-                gameManager.GameOver();
-            }
+            _gameManager.GameOver();
+            ServiceLocator.Get<ResultsHandler>().ApplyScore();
         }
-        else
-        {
-            Debug.Log("You loose a life. Rest is: " + lifeCounter);
-        }
+        Destroy(gameObject);
     }
 
     private void MovePlayer(float verticalInput)
@@ -97,32 +85,32 @@ public class PlayerController : MonoBehaviour
     {
         if (verticalInput >= 0 && horizontalInput != 0)
         {
-            transform.Rotate(Vector3.up, Time.deltaTime * playerRotationSpeed * horizontalInput);
+            transform.Rotate(Vector3.up, Time.deltaTime * _playerRotationSpeed * horizontalInput);
         }
         if (verticalInput < 0 && horizontalInput != 0)
         {
-            transform.Rotate(Vector3.up, Time.deltaTime * playerRotationSpeed * (-horizontalInput));
+            transform.Rotate(Vector3.up, Time.deltaTime * _playerRotationSpeed * (-horizontalInput));
         }
     }
 
     private void ConstrainPlayerPosition()
     {
-        if (transform.position.x < downXBorder)
+        if (transform.position.x < DownXBorder)
         {
-            transform.position = new(downXBorder, transform.position.y, transform.position.z);
+            transform.position = new(DownXBorder, transform.position.y, transform.position.z);
         }
-        else if (transform.position.x > upXBorder)
+        else if (transform.position.x > UpXBorder)
         {
-            transform.position = new(upXBorder, transform.position.y, transform.position.z);
+            transform.position = new(UpXBorder, transform.position.y, transform.position.z);
         }
 
-        if (transform.position.z > zBorder)
+        if (transform.position.z > ZBorder)
         {
-            transform.position = new(transform.position.x, transform.position.y, zBorder);
+            transform.position = new(transform.position.x, transform.position.y, ZBorder);
         }
-        else if (transform.position.z < -zBorder)
+        else if (transform.position.z < -ZBorder)
         {
-            transform.position = new(transform.position.x, transform.position.y, -zBorder);
+            transform.position = new(transform.position.x, transform.position.y, -ZBorder);
         }
     }
 
