@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,20 +13,40 @@ public class PlayerController : MonoBehaviour
 
     private GameManager _gameManager;
     private ItemsPooler _projectilesPoller;
-
+    private Animation _walkAnimation;
     private InputAction _moveAction;
+
+    private void Awake()
+    {
+        _moveAction = InputSystem.actions.FindAction("Move");
+        _gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        _projectilesPoller = GameObject.Find("Hearts Pooler").GetComponent<ItemsPooler>();
+        _walkAnimation = GetComponentInChildren<Animation>();
+    }
 
     private void Start()
     {
-        _moveAction = InputSystem.actions.FindAction("Move");
         InputSystem.actions.FindAction("Attack").performed += OnAttack;
-        _gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-        _projectilesPoller = GameObject.Find("Hearts Pooler").GetComponent<ItemsPooler>();
+        
         ServiceLocator.Get<EnergyHandler>().ResetEnergy();
         ServiceLocator.Get<ResultsHandler>().ResetScore();
     }
+    
+    private void Update()
+    {
+        if (!_gameManager.IsGamePaused())
+        {
+            if (_moveAction.IsPressed() && !_walkAnimation.isPlaying)
+            {
+                _walkAnimation.Play();
+            }
+            else if (!_moveAction.IsPressed() && _walkAnimation.isPlaying)
+            {
+                _walkAnimation.Stop();
+            }
+        }
+    }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         if (!_gameManager.IsGamePaused())
