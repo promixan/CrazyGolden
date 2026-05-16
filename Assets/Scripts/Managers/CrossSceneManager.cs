@@ -8,9 +8,7 @@ public class CrossSceneManager : MonoBehaviour
 {
     public static CrossSceneManager Instance;
     public DifficultiesDatabase DifficultiesDatabase;
-
-    public const int MaxPlayerNameLength = 10;
-
+    
     protected string PlayerDataPath;
     protected string BestScoresDataPath;
 
@@ -28,9 +26,9 @@ public class CrossSceneManager : MonoBehaviour
                 return;
             }
 
-            if (value.Length > MaxPlayerNameLength)
+            if (value.Length > GameConstants.Player.MaxPlayerNameLength)
             {
-                throw new ArgumentException("Maximum characters allowed: " + MaxPlayerNameLength);
+                throw new ArgumentException("Maximum characters allowed: " + GameConstants.Player.MaxPlayerNameLength);
             }
 
             m_playerName = value;
@@ -116,16 +114,14 @@ public class CrossSceneManager : MonoBehaviour
         }
     }
 
-    public void LoadBestScoresData()
+    private void LoadBestScoresData()
     {
-        if (File.Exists(BestScoresDataPath))
+        if (!File.Exists(BestScoresDataPath)) return;
+        var json = File.ReadAllText(BestScoresDataPath);
+        var bestScores = JsonUtility.FromJson<BestScores>(json);
+        if (bestScores is { scores: { Count: > 0 } })
         {
-            string json = File.ReadAllText(BestScoresDataPath);
-            List<ScoreData> scores = JsonUtility.FromJson<List<ScoreData>>(json);
-            if (scores != null && scores.Count > 0)
-            {
-                BestScores = scores;
-            }
+            BestScores = bestScores.scores;
         }
     }
 
@@ -135,5 +131,10 @@ public class CrossSceneManager : MonoBehaviour
         {
             BestScores = scores;
         }
+    }
+
+    public DifficultiesDatabase GetDifficultiesDatabase()
+    {
+        return DifficultiesDatabase;
     }
 }

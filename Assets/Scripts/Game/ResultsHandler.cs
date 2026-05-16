@@ -1,15 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 
 public class ResultsHandler : MonoBehaviour
 {
-    private const int MaxBestScoresNumber = 10;
-    
     private CrossSceneManager _crossSceneManager;
     private int CurrentScore { get; set; }
     
@@ -71,7 +67,7 @@ public class ResultsHandler : MonoBehaviour
     {
         while (true)
         {
-            if (list.Count() > MaxBestScoresNumber)
+            if (list.Count() > GameConstants.BestScores.MaxNumber)
             {
                 list.RemoveAt(list.Count() - 1);
                 continue;

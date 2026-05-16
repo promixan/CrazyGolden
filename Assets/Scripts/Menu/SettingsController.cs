@@ -1,47 +1,26 @@
-using UnityEngine;
-using UnityEngine.UI;
+using Menu.DifficultyButtons;
 
-public class SettingsController : MonoBehaviour
+namespace Menu
 {
-
-    public DifficultiesDatabase DifficultiesDatabase;
-
-    [SerializeField] private Button[] difficultyButtons;
-    [SerializeField] private Color defaultButtonColor;
-    [SerializeField] private Color pressedButtonColor;
-
-    void Start()
+    public class SettingsController : DifficultyButtonOrchestrator
     {
-        for (int i = 0; i < difficultyButtons.Length; i++)
+        private void Start()
         {
-            Button button = difficultyButtons[i];
-            var id = i;
-            button.onClick.AddListener(() => SelectDifficulty(id));
-        }
-        DifficultyData difficulty = CrossSceneManager.Instance.Difficulty;
-        ChooseDifficultyButton(difficulty.Id);
-    }
-
-    public void SelectDifficulty(int difficultyIndex)
-    {
-        CrossSceneManager.Instance.SelectDifficulty(difficultyIndex);
-        ChooseDifficultyButton(difficultyIndex);
-    }
-
-    private void ChooseDifficultyButton(int difficultyIndex)
-    {
-        for (int i = 0; i < difficultyButtons.Length; i++)
-        {
-            Button button = difficultyButtons[i];
-            var buttonColors = button.colors;
-            if (i == difficultyIndex)
+            for (var i = 0; i < difficultyButtons.Length; i++)
             {
-                buttonColors.normalColor = pressedButtonColor;
-            } else
-            {
-                buttonColors.normalColor = defaultButtonColor;
+                var button = difficultyButtons[i];
+                var id = i;
+                button.onClick.AddListener(() => SelectDifficulty(id));
             }
-            button.colors = buttonColors;
+        
+            var difficulty = CrossSceneManager.Instance.Difficulty;
+            ChooseDifficultyButton(difficulty.Id);
+        }
+
+        private void SelectDifficulty(int difficultyIndex)
+        {
+            CrossSceneManager.Instance.SelectDifficulty(difficultyIndex);
+            ChooseDifficultyButton(difficultyIndex);
         }
     }
 }

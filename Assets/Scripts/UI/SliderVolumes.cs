@@ -1,3 +1,4 @@
+using Data;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,13 +19,13 @@ public class SliderVolumes : MonoBehaviour
         switch (sliderType)
         {
             case GameConstants.Audio.VolumeType.General:
-                _slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(GameConstants.Audio.GENERAL_KEY, 1f));
+                _slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(GameConstants.Audio.GeneralKey, 1f));
                 break;
             case GameConstants.Audio.VolumeType.Music:
-                _slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(GameConstants.Audio.MUSIC_KEY, 1f));
+                _slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(GameConstants.Audio.MusicKey, 1f));
                 break;
-            case GameConstants.Audio.VolumeType.SFX:
-                _slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(GameConstants.Audio.SFX_KEY, 1f));
+            case GameConstants.Audio.VolumeType.Sfx:
+                _slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(GameConstants.Audio.SfxKey, 1f));
                 break;
         }
     }
@@ -39,7 +40,7 @@ public class SliderVolumes : MonoBehaviour
             case GameConstants.Audio.VolumeType.Music:
                 VolumeController.Instance.SetMusicVolume(value);
                 break;
-            case GameConstants.Audio.VolumeType.SFX:
+            case GameConstants.Audio.VolumeType.Sfx:
                 VolumeController.Instance.SetSFXVolume(value);
                 break;
         }
