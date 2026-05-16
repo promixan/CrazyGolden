@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 144145464770540677}
   - component: {fileID: 4796970787762505865}
   - component: {fileID: -5013097282819325407}
+  - component: {fileID: 7332458049974673795}
   m_Layer: 0
   m_Name: Heart
   m_TagString: Untagged
@@ -28,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2225228500817122867}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.4994876, y: -0.5078878, z: -0.4989942, w: 0.49352503}
+  m_LocalRotation: {x: -0.4994877, y: -0.507891, z: -0.49899346, w: 0.49352247}
   m_LocalPosition: {x: 0.081, y: 0.15, z: -0.001}
   m_LocalScale: {x: 5, y: 5, z: 7}
   m_ConstrainProportionsScale: 0
@@ -127,3 +128,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectileController
   speed: 15
+--- !u!54 &7332458049974673795
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2225228500817122867}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float playerSpeed = 10f;
     [SerializeField] private readonly float _playerRotationSpeed = 150f;
+    [SerializeField] private Transform firePoint;
     private const float UpXBorder = 13.0f;
     private const float DownXBorder = -5.0f;
     private const float ZBorder = 16.2f;
@@ -63,12 +64,17 @@ public class PlayerController : MonoBehaviour
 
     private void OnAttack(InputAction.CallbackContext context)
     {
-        if (!_gameManager.IsGamePaused())
-        {
-            GameObject projectile = _projectilesPoller.GetAvailableItemFromPool();
-            projectile.SetActive(true);
-            projectile.transform.position = transform.position;
-        }
+        if (_gameManager.IsGamePaused()) return;
+        
+        var projectile = _projectilesPoller.GetAvailableItemFromPool();
+        if (projectile == null) return;
+
+        projectile.transform.position = firePoint.position;
+        projectile.transform.rotation = firePoint.rotation;
+        projectile.SetActive(true);
+
+        var controller = projectile.GetComponent<ProjectileController>();
+        controller.UpdateDirection(firePoint.forward);
     }
 
     private void OnTriggerEnter(Collider other)
