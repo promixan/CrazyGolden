@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
     {
         gameOverScreen.SetActive(true);
         gameActive = false;
+        ServiceLocator.Get<ResultsHandler>().ApplyScore();
     }
 
     public void ReturnToMenu()

@@ -1,4 +1,5 @@
 using System;
+using Game;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -31,6 +32,7 @@ public class PlayerController : MonoBehaviour
         
         ServiceLocator.Get<EnergyHandler>().ResetEnergy();
         ServiceLocator.Get<ResultsHandler>().ResetScore();
+        ServiceLocator.Get<TimerHandler>().StartTimer();
     }
     
     private void Update()
@@ -80,9 +82,9 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         GameObject otgObject = other.gameObject;
-        if (otgObject.CompareTag("Target"))
+        if (otgObject.CompareTag("Enemy"))
         {
-            Debug.Log("Player is heated by Target.");
+            Debug.Log("Player is heated by Enemy.");
             Destroy(otgObject);
             DecreaseLives();
         }
@@ -92,11 +94,7 @@ public class PlayerController : MonoBehaviour
     {
         var energyLeft = ServiceLocator.Get<EnergyHandler>().DecreaseEnergy();
         if (energyLeft > 0) return;
-        if (_gameManager.IsGameActive())
-        {
-            _gameManager.GameOver();
-            ServiceLocator.Get<ResultsHandler>().ApplyScore();
-        }
+        _gameManager.GameOver();
         Destroy(gameObject);
     }
 

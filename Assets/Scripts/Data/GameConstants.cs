@@ -20,5 +20,10 @@ namespace Data
         {
             public const int MaxPlayerNameLength = 10;
         }
+
+        public static class Gameplay
+        {
+            public const int DefaultGameStartTimerValue = 100;
+        }
     }
 }

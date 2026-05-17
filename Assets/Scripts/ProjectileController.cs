@@ -23,6 +23,14 @@ public class ProjectileController : MonoBehaviour
             ServiceLocator.Get<ResultsHandler>().UpdateScore(1);
         }
 
+        if (otgObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Enemy is heated.");
+            Destroy(otgObject);
+            gameObject.SetActive(false);
+            ServiceLocator.Get<ResultsHandler>().UpdateScore(10);
+        }
+
         if (otgObject.CompareTag("Wall"))
         {
             gameObject.SetActive(false);

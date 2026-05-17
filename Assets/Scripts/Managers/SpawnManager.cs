@@ -3,40 +3,47 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public GameManager gameManager;
+    private GameManager _gameManager;
     public GameObject playerPrefab;
-    public GameObject[] targetPrefabs;
+    public GameObject[] goodAnimalPrefabs;
+    public GameObject[] enemyPrefabs;
 
     private readonly Vector3 playerDefaultPosition = new(-3.5f, 0.5f, 0f);
     private readonly float zPositionRange = 15.0f;
     public Collider[] maxTargetColliders;
 
-    private readonly float minTargetSpawnTimeOutRange = 2.0f;
-    private readonly float maxTargetSpawnTimeOutRange = 3.0f;
+    private readonly float _minTargetSpawnTimeOutRange = 1.0f;
+    private readonly float _maxTargetSpawnTimeOutRange = 2.0f;
+    private readonly float _minEnemySpawnTimeOutRange = 2.0f;
+    private readonly float _maxEnemySpawnTimeOutRange = 3.0f;
 
-    private Coroutine spawnCoroutine;
+    private Coroutine _spawnTargetCoroutine;
+    private Coroutine _spawnEnemyCoroutine;
 
-    void Awake()
+    private void Awake()
     {
         maxTargetColliders = new Collider[5];
-        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        _gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
     }
 
     public void StartNewGame()
     {
         ResetGame();
         SpawnPlayer();
-        spawnCoroutine = StartCoroutine(SpawnTargetRoutine());
+        _spawnTargetCoroutine = StartCoroutine(SpawnTargetRoutine());
+        _spawnEnemyCoroutine = StartCoroutine(SpawnEnemyRoutine());
     }
 
     public void ResetGame()
     {
-        if (spawnCoroutine != null)
+        if (_spawnTargetCoroutine != null)
         {
-            StopCoroutine(spawnCoroutine);
+            StopCoroutine(_spawnTargetCoroutine);
+            StopCoroutine(_spawnEnemyCoroutine);
         }
         DestroyAllObjects(GameObject.FindGameObjectsWithTag("Player"));
         DestroyAllObjects(GameObject.FindGameObjectsWithTag("Target"));
+        DestroyAllObjects(GameObject.FindGameObjectsWithTag("Enemy"));
     }
 
     private void SpawnPlayer()
@@ -46,21 +53,45 @@ public class SpawnManager : MonoBehaviour
     
     IEnumerator SpawnTargetRoutine()
     {
-        while (gameManager.IsGameActive())
+        while (_gameManager.IsGameActive())
         {
-            float timeToWait = Random.Range(minTargetSpawnTimeOutRange, maxTargetSpawnTimeOutRange);
+            float timeToWait = Random.Range(_minTargetSpawnTimeOutRange, _maxTargetSpawnTimeOutRange);
             yield return new WaitForSeconds(timeToWait);
-            if (gameManager.IsGameActive())
+            if (_gameManager.IsGameActive())
             {
                 SpawnTarget();
+            }
+        }
+    }
+    
+    IEnumerator SpawnEnemyRoutine()
+    {
+        while (_gameManager.IsGameActive())
+        {
+            var timeToWait = Random.Range(_minEnemySpawnTimeOutRange, _maxEnemySpawnTimeOutRange);
+            yield return new WaitForSeconds(timeToWait);
+            if (_gameManager.IsGameActive())
+            {
+                SpawnEnemy();
             }
         }
     }
 
     private void SpawnTarget()
     {
-        Vector3 position = GenerateRandomPosition();
-        GameObject target = targetPrefabs[Random.Range(0, targetPrefabs.Length)];
+        var target = goodAnimalPrefabs[Random.Range(0, goodAnimalPrefabs.Length)];
+        Spawn(target);
+    }
+    
+    private void SpawnEnemy()
+    {
+        var target = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+        Spawn(target);
+    }
+
+    private void Spawn(GameObject target)
+    {
+        var position = GenerateRandomPosition();
         Instantiate(target, position, target.transform.rotation);
     }
 
@@ -68,11 +99,11 @@ public class SpawnManager : MonoBehaviour
     {
         float zPosition = Random.Range(-zPositionRange, zPositionRange);
         Vector3 potentialPosition = new(17.0f, 0.28f, zPosition);
-        int colliderNumber = Physics.OverlapSphereNonAlloc(potentialPosition, 1.5f, maxTargetColliders);
+        /*int colliderNumber = Physics.OverlapSphereNonAlloc(potentialPosition, 1.5f, maxTargetColliders);
         if (colliderNumber > 0 && IsTargetExists())
         {
             return GenerateRandomPosition();
-        }
+        }*/
         return potentialPosition;
     }
 
