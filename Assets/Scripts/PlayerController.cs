@@ -88,6 +88,28 @@ public class PlayerController : MonoBehaviour
             Destroy(otgObject);
             DecreaseLives();
         }
+
+        if (otgObject.CompareTag("Clock"))
+        {
+            Debug.Log("Player is heated with a Clock. Time has been increased.");
+            otgObject.SetActive(false);
+            ServiceLocator.Get<TimerHandler>().AppendCurrentTimerTime(10);
+        }
+
+        if (otgObject.CompareTag("Battery"))
+        {
+            var energyHandler = ServiceLocator.Get<EnergyHandler>();
+            if (energyHandler.IsMaxEnergyAvailable())
+            {
+                Debug.Log("Player is heated with a Battery. Player's energy is already full.");
+            }
+            else
+            {
+                Debug.Log("Player is heated with a Battery. Energy level has been increased.");
+                otgObject.SetActive(false);
+                ServiceLocator.Get<EnergyHandler>().RestoreEnergy();
+            }
+        }
     }
 
     private void DecreaseLives()

@@ -1,130 +1,138 @@
 using System.Collections;
 using UnityEngine;
 
-public class SpawnManager : MonoBehaviour
+namespace Managers
 {
-    private GameManager _gameManager;
-    public GameObject playerPrefab;
-    public GameObject[] goodAnimalPrefabs;
-    public GameObject[] enemyPrefabs;
-
-    private readonly Vector3 playerDefaultPosition = new(-3.5f, 0.5f, 0f);
-    private readonly float zPositionRange = 15.0f;
-    public Collider[] maxTargetColliders;
-
-    private readonly float _minTargetSpawnTimeOutRange = 1.0f;
-    private readonly float _maxTargetSpawnTimeOutRange = 2.0f;
-    private readonly float _minEnemySpawnTimeOutRange = 2.0f;
-    private readonly float _maxEnemySpawnTimeOutRange = 3.0f;
-
-    private Coroutine _spawnTargetCoroutine;
-    private Coroutine _spawnEnemyCoroutine;
-
-    private void Awake()
+    public class SpawnManager : MonoBehaviour
     {
-        maxTargetColliders = new Collider[5];
-        _gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-    }
+        private GameManager _gameManager;
+        private PowerUpsManager _clockPowerUpManager;
+        private PowerUpsManager _batteryPowerUpManager;
+        public GameObject playerPrefab;
+        public GameObject[] goodAnimalPrefabs;
+        public GameObject[] enemyPrefabs;
 
-    public void StartNewGame()
-    {
-        ResetGame();
-        SpawnPlayer();
-        _spawnTargetCoroutine = StartCoroutine(SpawnTargetRoutine());
-        _spawnEnemyCoroutine = StartCoroutine(SpawnEnemyRoutine());
-    }
+        private readonly Vector3 playerDefaultPosition = new(-3.5f, 0.5f, 0f);
+        private readonly float zPositionRange = 15.0f;
+        public Collider[] maxTargetColliders;
 
-    public void ResetGame()
-    {
-        if (_spawnTargetCoroutine != null)
+        private readonly float _minTargetSpawnTimeOutRange = 1.0f;
+        private readonly float _maxTargetSpawnTimeOutRange = 2.0f;
+        private readonly float _minEnemySpawnTimeOutRange = 2.0f;
+        private readonly float _maxEnemySpawnTimeOutRange = 3.0f;
+
+        private Coroutine _spawnTargetCoroutine;
+        private Coroutine _spawnEnemyCoroutine;
+
+        private void Awake()
         {
-            StopCoroutine(_spawnTargetCoroutine);
-            StopCoroutine(_spawnEnemyCoroutine);
+            maxTargetColliders = new Collider[5];
+            _gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+            _clockPowerUpManager = GameObject.Find("ClockPowerUpManager").GetComponent<PowerUpsManager>();
+            _batteryPowerUpManager = GameObject.Find("BatteryPowerUpManager").GetComponent<PowerUpsManager>();
         }
-        DestroyAllObjects(GameObject.FindGameObjectsWithTag("Player"));
-        DestroyAllObjects(GameObject.FindGameObjectsWithTag("Target"));
-        DestroyAllObjects(GameObject.FindGameObjectsWithTag("Enemy"));
-    }
 
-    private void SpawnPlayer()
-    {
-        Instantiate(playerPrefab, playerDefaultPosition, playerPrefab.transform.rotation);
-    }
-    
-    IEnumerator SpawnTargetRoutine()
-    {
-        while (_gameManager.IsGameActive())
+        public void StartNewGame()
         {
-            float timeToWait = Random.Range(_minTargetSpawnTimeOutRange, _maxTargetSpawnTimeOutRange);
-            yield return new WaitForSeconds(timeToWait);
-            if (_gameManager.IsGameActive())
+            ResetGame();
+            SpawnPlayer();
+            _spawnTargetCoroutine = StartCoroutine(SpawnTargetRoutine());
+            _spawnEnemyCoroutine = StartCoroutine(SpawnEnemyRoutine());
+            _clockPowerUpManager.RunPowerUpSpawn();
+            _batteryPowerUpManager.RunPowerUpSpawn();
+        }
+
+        public void ResetGame()
+        {
+            if (_spawnTargetCoroutine != null) StopCoroutine(_spawnTargetCoroutine);
+            if (_spawnEnemyCoroutine != null) StopCoroutine(_spawnEnemyCoroutine);
+            _clockPowerUpManager.StopPowerUpSpawn();
+            _batteryPowerUpManager.StopPowerUpSpawn();
+            DestroyAllObjects(GameObject.FindGameObjectsWithTag("Player"));
+            DestroyAllObjects(GameObject.FindGameObjectsWithTag("Target"));
+            DestroyAllObjects(GameObject.FindGameObjectsWithTag("Enemy"));
+        }
+
+        private void SpawnPlayer()
+        {
+            Instantiate(playerPrefab, playerDefaultPosition, playerPrefab.transform.rotation);
+        }
+    
+        IEnumerator SpawnTargetRoutine()
+        {
+            while (_gameManager.IsGameActive())
             {
-                SpawnTarget();
+                float timeToWait = Random.Range(_minTargetSpawnTimeOutRange, _maxTargetSpawnTimeOutRange);
+                yield return new WaitForSeconds(timeToWait);
+                if (_gameManager.IsGameActive())
+                {
+                    SpawnTarget();
+                }
             }
         }
-    }
     
-    IEnumerator SpawnEnemyRoutine()
-    {
-        while (_gameManager.IsGameActive())
+        IEnumerator SpawnEnemyRoutine()
         {
-            var timeToWait = Random.Range(_minEnemySpawnTimeOutRange, _maxEnemySpawnTimeOutRange);
-            yield return new WaitForSeconds(timeToWait);
-            if (_gameManager.IsGameActive())
+            while (_gameManager.IsGameActive())
             {
-                SpawnEnemy();
+                var timeToWait = Random.Range(_minEnemySpawnTimeOutRange, _maxEnemySpawnTimeOutRange);
+                yield return new WaitForSeconds(timeToWait);
+                if (_gameManager.IsGameActive())
+                {
+                    SpawnEnemy();
+                }
             }
         }
-    }
 
-    private void SpawnTarget()
-    {
-        var target = goodAnimalPrefabs[Random.Range(0, goodAnimalPrefabs.Length)];
-        Spawn(target);
-    }
+        private void SpawnTarget()
+        {
+            var target = goodAnimalPrefabs[Random.Range(0, goodAnimalPrefabs.Length)];
+            Spawn(target);
+        }
     
-    private void SpawnEnemy()
-    {
-        var target = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
-        Spawn(target);
-    }
+        private void SpawnEnemy()
+        {
+            var target = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+            Spawn(target);
+        }
 
-    private void Spawn(GameObject target)
-    {
-        var position = GenerateRandomPosition();
-        Instantiate(target, position, target.transform.rotation);
-    }
+        private void Spawn(GameObject target)
+        {
+            var position = GenerateRandomPosition();
+            Instantiate(target, position, target.transform.rotation);
+        }
 
-    private Vector3 GenerateRandomPosition()
-    {
-        float zPosition = Random.Range(-zPositionRange, zPositionRange);
-        Vector3 potentialPosition = new(17.0f, 0.28f, zPosition);
-        /*int colliderNumber = Physics.OverlapSphereNonAlloc(potentialPosition, 1.5f, maxTargetColliders);
+        private Vector3 GenerateRandomPosition()
+        {
+            float zPosition = Random.Range(-zPositionRange, zPositionRange);
+            Vector3 potentialPosition = new(17.0f, 0.28f, zPosition);
+            /*int colliderNumber = Physics.OverlapSphereNonAlloc(potentialPosition, 1.5f, maxTargetColliders);
         if (colliderNumber > 0 && IsTargetExists())
         {
             return GenerateRandomPosition();
         }*/
-        return potentialPosition;
-    }
-
-    private bool IsTargetExists()
-    {
-        for (int i = 0; i < maxTargetColliders.Length; i++)
-        {
-            Collider c = maxTargetColliders[i];
-            if (c != null && c.CompareTag("Target"))
-            {
-                return true;
-            }
+            return potentialPosition;
         }
-        return false;
-    }
 
-    private void DestroyAllObjects(GameObject[] objects)
-    {
-        foreach (GameObject o in objects)
+        private bool IsTargetExists()
         {
-            Destroy(o);
+            for (int i = 0; i < maxTargetColliders.Length; i++)
+            {
+                Collider c = maxTargetColliders[i];
+                if (c != null && c.CompareTag("Target"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void DestroyAllObjects(GameObject[] objects)
+        {
+            foreach (GameObject o in objects)
+            {
+                Destroy(o);
+            }
         }
     }
 }

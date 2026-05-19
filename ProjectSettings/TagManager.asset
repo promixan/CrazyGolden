@@ -9,6 +9,8 @@ TagManager:
   - Ground
   - Wall
   - Enemy
+  - Clock
+  - Battery
   layers:
   - Default
   - TransparentFX

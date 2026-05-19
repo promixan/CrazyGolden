@@ -1,61 +1,75 @@
-using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnergyHandler : MonoBehaviour
+namespace Game
 {
-    public RawImage[] energyBatteries;
+    public class EnergyHandler : MonoBehaviour
+    {
+        public RawImage[] energyBatteries;
     
-    private GameManager _gameManager;
-    private const float DefaultDisabledEnergy = 0.5f;
-    private const float DefaultEnabledEnergy = 1.0f;
+        private GameManager _gameManager;
+        private const float DefaultDisabledEnergy = 0.5f;
+        private const float DefaultEnabledEnergy = 1.0f;
 
-    private void Start()
-    {
-        ServiceLocator.Register(this);
-        ResetEnergy();
-    }
-
-    private void OnDestroy()
-    {
-        ServiceLocator.Unregister<ResultsHandler>();
-    }
-
-    public void ResetEnergy()
-    {
-        foreach (var battery in energyBatteries)
+        private void Start()
         {
-            var color = battery.color;
-            color.a = DefaultEnabledEnergy;
-            battery.color = color;
+            ServiceLocator.Register(this);
+            ResetEnergy();
         }
-    }
 
-    public int DecreaseEnergy()
-    {
-        var i = 0;
-        foreach (var battery in energyBatteries)
+        private void OnDestroy()
         {
-            i++;
-            var color = battery.color;
-            if (color.a < DefaultEnabledEnergy) continue;
-            color.a = DefaultDisabledEnergy;
-            battery.color = color;
-            break;
+            ServiceLocator.Unregister<ResultsHandler>();
         }
-        return energyBatteries.Length - i;
-    }
 
-    public void RestoreEnergy()
-    {
-        foreach (var battery in energyBatteries.Reverse())
+        public void ResetEnergy()
         {
-            var color = battery.color;
-            if (!(color.a < DefaultEnabledEnergy))  continue;
-            color.a = DefaultEnabledEnergy;
-            battery.color = color;
-            break;
+            foreach (var battery in energyBatteries)
+            {
+                var color = battery.color;
+                color.a = DefaultEnabledEnergy;
+                battery.color = color;
+            }
+        }
+
+        public int DecreaseEnergy()
+        {
+            var i = 0;
+            foreach (var battery in energyBatteries)
+            {
+                i++;
+                var color = battery.color;
+                if (color.a < DefaultEnabledEnergy) continue;
+                color.a = DefaultDisabledEnergy;
+                battery.color = color;
+                break;
+            }
+            return energyBatteries.Length - i;
+        }
+
+        public void RestoreEnergy()
+        {
+            foreach (var battery in energyBatteries.Reverse())
+            {
+                var color = battery.color;
+                if (!(color.a < DefaultEnabledEnergy))  continue;
+                color.a = DefaultEnabledEnergy;
+                battery.color = color;
+                break;
+            }
+        }
+
+        public bool IsMaxEnergyAvailable()
+        {
+            return GetEnergyLevel() == energyBatteries.Length;
+        }
+
+        private int GetEnergyLevel()
+        {
+            return energyBatteries
+                .Select(battery => battery.color)
+                .Count(color => color.a > DefaultDisabledEnergy);
         }
     }
 }

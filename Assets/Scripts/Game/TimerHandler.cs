@@ -45,13 +45,25 @@ namespace Game
             }
         }
 
-        public void UpdateCurrentTimerValue(int timerValue)
+        private void UpdateCurrentTimerValue(int timerValue)
         {
             _timerValue = timerValue;
             timerText.text = _timerValue + " s";
         }
+
+        public void AppendCurrentTimerTime(int timeToAppend)
+        {
+            _timerValue += timeToAppend;
+            timerText.text = _timerValue + " s";
+        }
+        
+        public void DecreaseCurrentTimerTime(int timeToAppend)
+        {
+            _timerValue -= timeToAppend;
+            timerText.text = _timerValue + " s";
+        }
     
-        public void UpdateDefaultTimerValue(int timerValue)
+        private void UpdateDefaultTimerValue(int timerValue)
         {
             _currentDefaultValue = timerValue;
         }

@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78ed07b02532405892da2e8193d8671d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Controllers.EnemyMovementsController
-  speed: 6
+  speed: 5
 --- !u!54 &8274842717415341334
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -7,15 +7,14 @@ public class ItemsPooler : MonoBehaviour
     [SerializeField] private GameObject poolTarget;
     [SerializeField] private List<GameObject> pooledItems;
 
-    void Start()
+    private void Start()
     {
         pooledItems = new List<GameObject>();
-        for(int i = 0; i < poolSize; i++)
+        for(var i = 0; i < poolSize; i++)
         {
-            GameObject gameObject = Instantiate(poolTarget);
-            gameObject.SetActive(false);
-            pooledItems.Add(gameObject);
-            gameObject.transform.SetParent(this.transform);
+            var item = Instantiate(poolTarget, transform);
+            item.SetActive(false);
+            pooledItems.Add(item);
         }
     }
 
@@ -29,5 +28,13 @@ public class ItemsPooler : MonoBehaviour
             }
         }
         return null;
+    }
+    
+    public void DeactivateAllItems()
+    {
+        foreach (var item in pooledItems)
+        {
+            item.gameObject.SetActive(false);
+        }
     }
 }
